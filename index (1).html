@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ - Tư Vấn Học Tập Thông Minh</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6DD5ED, #2193B0); /* Gradient xanh dương-cyan */
+            --secondary-gradient: linear-gradient(135deg, #FFC107, #FF8F00); /* Gradient cam-vàng */
+            --text-dark: #2c3e50; /* Gần như đen */
+            --text-light: #ecf0f1; /* Gần như trắng */
+            --bg-light: #fefefe;
+            --card-bg: #ffffff;
+            --shadow-subtle: rgba(0, 0, 0, 0.08);
+            --shadow-strong: rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            text-align: center;
+            line-height: 1.7;
+            overflow-x: hidden; /* Ngăn chặn scroll ngang không mong muốn */
+        }
+
+        /* Hero Section - Phần đầu trang lớn và nổi bật */
+        .hero-section {
+            background: var(--primary-gradient);
+            color: var(--text-light);
+            padding: 80px 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--shadow-subtle);
+        }
+
+        .hero-section::before { /* Hiệu ứng gợn sóng nhẹ */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px; /* Chiều cao của gợn sóng */
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg"><path fill="%23fefefe" fill-opacity="1" d="M0,64L48,53.3C96,43,192,21,288,26.7C384,32,480,64,576,64C672,64,768,32,864,21.3C960,11,1056,21,1152,32C1248,43,1344,53,1392,58.7L1440,64L1440,100L1392,100C1344,100,1248,100,1152,100C1056,100,960,100,864,100C768,100,672,100,576,100C480,100,384,100,288,100C192,100,96,100,48,100L0,100Z"></path></svg>') no-repeat bottom center;
+            background-size: cover;
+            transform: translateY(1px); /* Đẩy lên 1px để che đường viền */
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1; /* Đảm bảo nội dung nằm trên hiệu ứng sóng */
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-content h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.8em;
+            margin-bottom: 15px;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .hero-content p {
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Main Content Section */
+        .main-content {
+            max-width: 1200px; /* Chiều rộng lớn hơn nữa */
+            margin: -50px auto 50px auto; /* Kéo lên để che phần sóng của hero */
+            padding: 30px;
+            background-color: var(--bg-light);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-subtle);
+            position: relative;
+            z-index: 2; /* Đảm bảo nằm trên hero-section */
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5em;
+            color: var(--text-dark);
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after { /* Đường gạch chân dưới tiêu đề */
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--primary-gradient);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Các thẻ rộng hơn */
+            gap: 30px;
+            padding: 20px 0;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-dark);
+            padding: 35px;
+            box-shadow: 0 5px 20px var(--shadow-subtle);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-12px) scale(1.02); /* Nâng cao và phóng to nhẹ */
+            box-shadow: 0 15px 40px var(--shadow-strong);
+        }
+
+        .feature-card i { /* Biểu tượng trong thẻ */
+            font-size: 3.5em;
+            margin-bottom: 25px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block; /* Đảm bảo gradient áp dụng đúng */
+        }
+        
+        /* CSS gốc của bạn: thẻ chẵn (2, 4) sẽ có màu cam/vàng */
+        .feature-card:nth-child(even) i {
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feature-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            font-size: 1.05em;
+            color: #555;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            padding: 30px 20px;
+            font-size: 0.95em;
+            color: var(--text-light);
+            background: var(--text-dark); /* Nền tối hơn cho footer */
+            box-shadow: 0 -4px 15px var(--shadow-subtle);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .hero-content h1 {
+                font-size: 3em;
+            }
+            .hero-content p {
+                font-size: 1.1em;
+            }
+            .main-content {
+                margin: -30px auto 30px auto;
+                padding: 25px;
+            }
+            .section-title {
+                font-size: 2em;
+            }
+            .feature-card {
+                padding: 30px;
+            }
+            .feature-card h3 {
+                font-size: 1.6em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 60px 15px;
+            }
+            .hero-content h1 {
+                font-size: 2.5em;
+            }
+            .hero-content p {
+                font-size: 1em;
+                margin-bottom: 30px;
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .section-title {
+                font-size: 1.8em;
+            }
+            .features-grid {
+                grid-template-columns: 1fr; /* Một cột trên màn hình nhỏ */
+            }
+            .feature-card {
+                padding: 25px;
+            }
+            .feature-card i {
+                font-size: 3em;
+                margin-bottom: 20px;
+            }
+            .feature-card h3 {
+                font-size: 1.4em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section {
+                padding: 40px 10px;
+            }
+            .hero-content h1 {
+                font-size: 2em;
+            }
+            .hero-content p {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1>Khám phá Con Đường Học Vấn Của Bạn</h1>
+            <p>Trang web của chúng tôi cung cấp các công cụ thông minh giúp bạn đưa ra những quyết định học tập sáng suốt, từ định hướng cấp 3 đến lựa chọn ngành nghề đại học mơ ước.</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h2 class="section-title">Các Tính Năng Nổi Bật</h2>
+        
+        <div class="features-grid">
+            <a href="tuvantohop.html" class="feature-card">
+                <i class="fas fa-graduation-cap"></i> <h3>Tư vấn Tổ hợp vào 10</h3>
+                <p>Công cụ phân tích tự động giúp bạn chọn tổ hợp môn tối ưu để vào cấp 3.</p>
+            </a>
+            <a href="hotrohoctap.html" class="feature-card">
+                <i class="fas fa-robot"></i> <h3>Chatbot AI Tư vấn Đại học</h3>
+                <p>Chatbot thông minh hỗ trợ định hướng ngành, trường theo dự định tương lai của bạn.</p>
+            </a>
+            
+            <a href="hocluyen.html" class="feature-card">
+                <i class="fas fa-book-reader"></i> <h3>Hỗ trợ Học tập</h3>
+                <p>Gia sư AI giải bài tập, kho đề thi vào 10 và hệ thống tự động tạo đề ôn tập.</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2026 </p>
+    </div>
+</body>
+</html>

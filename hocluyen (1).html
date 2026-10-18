@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hỗ trợ Học tập toàn diện</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    
+    <script>
+        MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['[', ']']] } };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#2193B0', secondary: '#6DD5ED', dark: '#2c3e50', light: '#ecf0f1' },
+                    fontFamily: { sans: ['Open Sans', 'sans-serif'], heading: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; }
+        .tab-btn.active { border-bottom: 3px solid #2193B0; color: #2193B0; font-weight: 600; }
+        .markdown p { margin-bottom: 0.75rem; line-height: 1.6; }
+        .markdown ul { list-style-type: disc; margin-bottom: 1rem; padding-left: 1.5rem; }
+        .markdown ol { list-style-type: decimal; margin-bottom: 1rem; padding-left: 1.5rem; }
+        .markdown h3, .markdown h4 { font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: #1e293b; }
+        .markdown code { background: #e2e8f0; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-family: monospace; }
+        .markdown pre { background: #1e293b; color: white; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 1rem; }
+        .markdown table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+        .markdown th, .markdown td { border: 1px solid #cbd5e1; padding: 0.5rem; }
+        .hide-scrollbar::-webkit-scrollbar { width: 6px; }
+        .hide-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .hide-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .loading-dots::after { content: '.'; animation: dots 1.5s steps(5, end) infinite; }
+        @keyframes dots { 0%, 20% { color: transparent; text-shadow: .25em 0 0 transparent, .5em 0 0 transparent; } 40% { color: #2193B0; text-shadow: .25em 0 0 transparent, .5em 0 0 transparent; } 60% { text-shadow: .25em 0 0 #2193B0, .5em 0 0 transparent; } 80%, 100% { text-shadow: .25em 0 0 #2193B0, .5em 0 0 #2193B0; } }
+        
+        .ai-disclaimer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #cbd5e1;
+            color: #64748b;
+            font-size: 0.875rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="text-dark flex flex-col min-h-screen">
+
+    <header class="bg-white shadow-sm border-b border-gray-200 py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <a href="index.html" class="text-gray-500 hover:text-primary transition flex items-center gap-2 font-semibold">
+                <i class="fas fa-arrow-left"></i> Trang chủ
+            </a>
+            <h1 class="font-heading font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-[#6DD5ED] to-[#2193B0]">
+                Trung Tâm Hỗ Trợ Học Tập
+            </h1>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl mx-auto w-full p-4 md:p-6 flex flex-col">
+        
+        <div class="flex overflow-x-auto border-b border-gray-200 mb-6 bg-white rounded-t-xl px-4 pt-2 shadow-sm">
+            <button onclick="switchTab('giasu')" id="btn-giasu" class="tab-btn active px-6 py-3 text-gray-600 hover:text-primary transition whitespace-nowrap">
+                <i class="fas fa-chalkboard-teacher mr-2"></i> Gia Sư AI
+            </button>
+            <button onclick="switchTab('khode')" id="btn-khode" class="tab-btn px-6 py-3 text-gray-600 hover:text-primary transition whitespace-nowrap">
+                <i class="fas fa-folder-open mr-2"></i> Kho Đề Thi
+            </button>
+            <button onclick="switchTab('taode')" id="btn-taode" class="tab-btn px-6 py-3 text-gray-600 hover:text-primary transition whitespace-nowrap">
+                <i class="fas fa-magic mr-2"></i> AI Tạo Đề Thi Vào 10
+            </button>
+        </div>
+
+        <div id="tab-giasu" class="tab-content flex-1 bg-white rounded-b-xl rounded-tr-xl shadow-sm border border-gray-200 flex flex-col h-[600px]">
+            <div id="giasu-chat" class="flex-1 overflow-y-auto p-6 space-y-4 hide-scrollbar bg-slate-50">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white shrink-0 shadow-md">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm max-w-[85%]">
+                        <p class="text-gray-800">Xin chào! Thầy/cô là Gia sư AI. Hãy gửi bài tập em đang gặp khó khăn (Toán, Lý, Hóa, Văn, Anh...), thầy/cô sẽ hướng dẫn giải chi tiết từng bước cho em nhé!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-gray-200 bg-white">
+                <form id="giasu-form" class="flex gap-2">
+                    <textarea id="giasu-input" rows="2" class="flex-1 resize-none border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary shadow-inner" placeholder="Nhập bài tập cần giải vào đây..."></textarea>
+                    <button type="submit" class="bg-primary hover:bg-blue-600 text-white px-6 rounded-lg transition shadow-md flex items-center justify-center">
+                        <i class="fas fa-paper-plane text-xl"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="tab-khode" class="tab-content hidden flex-1 bg-white rounded-b-xl rounded-tr-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-heading font-bold text-gray-800">Kho Đề Thi Tham Khảo</h2>
+                <div class="text-sm text-gray-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                    <i class="fas fa-check-circle text-blue-500 mr-1"></i> Tài liệu chính thức từ Admin
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="file-grid">
+                </div>
+        </div>
+
+        <div id="tab-taode" class="tab-content hidden flex-1 bg-white rounded-b-xl rounded-tr-xl shadow-sm border border-gray-200 flex flex-col lg:flex-row overflow-hidden h-[600px]">
+            <div class="w-full lg:w-1/3 bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-200 p-6 flex flex-col">
+                <h2 class="text-xl font-heading font-bold text-gray-800 mb-6">Tùy chỉnh Đề thi vào 10</h2>
+                
+                <div class="space-y-4 flex-1">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Môn học</label>
+                        <select id="gen-subject" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary outline-none">
+                            <option value="Toán">Toán</option>
+                            <option value="Ngữ Văn">Ngữ Văn</option>
+                            <option value="Tiếng Anh">Tiếng Anh</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Mức độ</label>
+                        <select id="gen-level" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary outline-none">
+                            <option value="Cơ bản">Cơ bản (7 điểm)</option>
+                            <option value="Vận dụng">Vận dụng (8-9 điểm)</option>
+                            <option value="Nâng cao">Nâng cao (10 điểm)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="btn-generate" class="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 rounded-lg shadow-md hover:opacity-90 transition flex items-center justify-center gap-2 mt-4">
+                    <i class="fas fa-cogs"></i> AI Bắt Đầu Tạo Đề
+                </button>
+            </div>
+
+            <div class="w-full lg:w-2/3 p-6 flex flex-col bg-white overflow-hidden">
+                <div id="gen-result" class="flex-1 overflow-y-auto hide-scrollbar markdown">
+                    <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                        <i class="fas fa-file-signature text-6xl mb-4 opacity-50"></i>
+                        <p>Chọn cấu hình và bấm "Tạo Đề" để AI bắt đầu biên soạn.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ----------------------------------------------------
+        // LOGIC CHUYỂN TAB
+        // ----------------------------------------------------
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabId}`).classList.add('active');
+        }
+
+        // ----------------------------------------------------
+        // TIỆN ÍCH
+        // ----------------------------------------------------
+        marked.setOptions({ breaks: true });
+        
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function renderMath(element) {
+            if (window.MathJax) {
+                MathJax.typesetPromise([element]).catch(err => console.error(err));
+            }
+        }
+
+        const aiDisclaimerText = "\n\n<div class='ai-disclaimer'><i class='fas fa-info-circle mr-1'></i> Nội dung do AI tạo ra chỉ mang tính tham khảo, vui lòng đối chiếu với SGK hoặc thầy cô giáo.</div>";
+
+        // ----------------------------------------------------
+        // TÍNH NĂNG 1: GIA SƯ AI
+        // ----------------------------------------------------
+        const giasuForm = document.getElementById('giasu-form');
+        const giasuInput = document.getElementById('giasu-input');
+        const giasuChat = document.getElementById('giasu-chat');
+        let isTutorThinking = false;
+
+        giasuInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); giasuForm.dispatchEvent(new Event('submit')); }
+        });
+
+        giasuForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userText = giasuInput.value.trim();
+            if (!userText || isTutorThinking) return;
+
+            // Render User Message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'flex items-start gap-3 flex-row-reverse';
+            userDiv.innerHTML = `<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 shrink-0 shadow-sm"><i class="fas fa-user"></i></div>
+                                 <div class="bg-primary text-white p-4 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] whitespace-pre-wrap">${escapeHtml(userText)}</div>`;
+            giasuChat.appendChild(userDiv);
+            giasuInput.value = '';
+            giasuChat.scrollTop = giasuChat.scrollHeight;
+
+            // Render Loading
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'flex items-start gap-3';
+            loadingDiv.innerHTML = `<div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white shrink-0"><i class="fas fa-robot"></i></div>
+                                    <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none font-bold text-gray-500 loading-dots">Đang giải</div>`;
+            giasuChat.appendChild(loadingDiv);
+            giasuChat.scrollTop = giasuChat.scrollHeight;
+
+            isTutorThinking = true;
+
+            const systemPrompt = `[YÊU CẦU NGHIÊM NGẶT: Bạn là một Thầy/Cô giáo xuất sắc, đang giải đáp bài tập cho học sinh cấp 2/cấp 3.
+            Nguyên tắc:
+            1. Giải thích chính xác, đi thẳng vào trọng tâm, phân tích từng bước rõ ràng.
+            2. Cung cấp ĐÁP ÁN CUỐI CÙNG được in đậm.
+            3. Tuyệt đối không bịa đặt. Nếu đề thiếu dữ kiện hoặc không thể giải, hãy giải thích lý do rõ ràng.
+            4. Trình bày bằng ngôn ngữ thân thiện, xưng "Thầy/Cô" và gọi "em".]
+            
+            Đề bài của học sinh: ${userText}`;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: systemPrompt })
+                });
+
+                if (!response.ok) throw new Error("Lỗi kết nối API");
+                const data = await response.json();
+                
+                // Nối trực tiếp câu cảnh báo vào phản hồi của AI
+                const reply = (data.reply || data.text || "Xin lỗi, thầy cô không thể phản hồi lúc này.") + aiDisclaimerText;
+
+                giasuChat.removeChild(loadingDiv);
+
+                const botDiv = document.createElement('div');
+                botDiv.className = 'flex items-start gap-3';
+                const cleanHTML = DOMPurify.sanitize(marked.parse(reply));
+                botDiv.innerHTML = `<div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot"></i></div>
+                                    <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm max-w-[90%] markdown w-full">${cleanHTML}</div>`;
+                giasuChat.appendChild(botDiv);
+                renderMath(botDiv);
+                giasuChat.scrollTop = giasuChat.scrollHeight;
+
+            } catch (err) {
+                giasuChat.removeChild(loadingDiv);
+                alert("Lỗi hệ thống gia sư: " + err.message);
+            } finally {
+                isTutorThinking = false;
+            }
+        });
+
+        // ----------------------------------------------------
+        // TÍNH NĂNG 2: KHO ĐỀ THI TĨNH (ĐÃ ĐỒNG BỘ GITHUB)
+        // ----------------------------------------------------
+        
+        const staticFiles = [
+            { 
+                title: "Đề thi Toán vào 10", 
+                fileName: "detoan.pdf", 
+                path: "./tailieu/detoan.pdf", 
+                icon: "fa-file-pdf", 
+                color: "text-red-500", 
+                date: "Cập nhật mới nhất" 
+            },
+            { 
+                title: "Đề thi Ngữ Văn vào 10", 
+                fileName: "devan.docx", 
+                path: "./tailieu/devan.docx", 
+                icon: "fa-file-word", 
+                color: "text-blue-500", 
+                date: "Cập nhật mới nhất" 
+            },
+            { 
+                title: "Đề thi Tiếng Anh vào 10", 
+                fileName: "deanh.docx", 
+                path: "./tailieu/deanh.docx", 
+                icon: "fa-file-word", 
+                color: "text-blue-500", 
+                date: "Cập nhật mới nhất" 
+            }
+        ];
+
+        function loadStaticFiles() {
+            const fileGrid = document.getElementById('file-grid');
+            fileGrid.innerHTML = ''; 
+            
+            staticFiles.forEach(file => {
+                fileGrid.innerHTML += `
+                    <div class="border border-gray-200 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition bg-gray-50 group">
+                        <i class="fas ${file.icon} text-4xl ${file.color}"></i>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-semibold text-gray-800 truncate" title="${file.title}">${file.title}</h4>
+                            <p class="text-xs text-gray-500 mt-1">${file.date}</p>
+                        </div>
+                        <a href="${file.path}" download="${file.fileName}" target="_blank" title="Tải xuống" class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-600 hover:text-white transition cursor-pointer shadow-sm">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                `;
+            });
+        }
+
+        loadStaticFiles();
+
+        // ----------------------------------------------------
+        // TÍNH NĂNG 3: AI TẠO ĐỀ ÔN TẬP
+        // ----------------------------------------------------
+        const btnGenerate = document.getElementById('btn-generate');
+        const genResult = document.getElementById('gen-result');
+
+        btnGenerate.addEventListener('click', async () => {
+            const subject = document.getElementById('gen-subject').value;
+            const level = document.getElementById('gen-level').value;
+
+            btnGenerate.disabled = true;
+            btnGenerate.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang biên soạn...`;
+            genResult.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full text-primary space-y-4">
+                    <i class="fas fa-cog fa-spin text-5xl"></i>
+                    <p class="font-semibold animate-pulse">AI đang phân tích cấu trúc và sinh đề thi thử vào 10 môn ${subject} (${level}). Vui lòng đợi...</p>
+                </div>
+            `;
+
+            const prompt = `[YÊU CẦU NGHIÊM NGẶT: Đóng vai Hội đồng ra đề thi tuyển sinh lớp 10.
+            Nhiệm vụ: Tạo 01 đề thi thử vào lớp 10 môn ${subject}, độ khó: ${level} bám sát cấu trúc đề thi tuyển sinh hiện tại của các Sở GD&ĐT.
+            Cấu trúc bài viết bắt buộc:
+            1. Phần đầu: Tiêu đề đề thi in đậm, ghi rõ thời gian làm bài (thường 120 phút đối với Toán/Văn và 60 phút đối với Anh).
+            2. Phần ĐỀ THI: Cấu trúc phải sát với đề thi tuyển sinh vào lớp 10 thực tế (Trắc nghiệm/Tự luận tùy đặc thù môn học). Đề bài cần sáng tạo, có tính phân loại học sinh, không copy y hệt trên mạng.
+            3. Dòng kẻ phân cách: "---"
+            4. Phần ĐÁP ÁN: Lời giải chi tiết, rõ ràng, giải thích cách làm và thang điểm tham khảo.
+            Trình bày bằng Markdown sạch sẽ, sử dụng LaTeX ($ và $$) cho các công thức toán học/vật lý/hóa học.]`;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: prompt })
+                });
+
+                if (!response.ok) throw new Error("Lỗi API sinh đề");
+                const data = await response.json();
+                
+                // Nối trực tiếp câu cảnh báo vào dữ liệu trả ra
+                const replyData = (data.reply || "Không có dữ liệu") + aiDisclaimerText;
+                
+                const cleanHTML = DOMPurify.sanitize(marked.parse(replyData));
+                genResult.innerHTML = cleanHTML;
+                renderMath(genResult);
+                
+            } catch (err) {
+                genResult.innerHTML = `<div class="text-red-500 font-bold p-4 bg-red-50 rounded"><i class="fas fa-exclamation-triangle"></i> Lỗi: ${err.message}</div>`;
+            } finally {
+                btnGenerate.disabled = false;
+                btnGenerate.innerHTML = `<i class="fas fa-cogs"></i> AI Bắt Đầu Tạo Đề`;
+            }
+        });
+
+    </script>
+</body>
+</html>
