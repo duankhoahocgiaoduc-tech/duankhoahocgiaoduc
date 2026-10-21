@@ -81,7 +81,6 @@
             </button>
         </div>
 
-        <!-- TAB 1: GIA SƯ AI -->
         <div id="tab-giasu" class="tab-content flex-1 bg-white rounded-b-xl rounded-tr-xl shadow-sm border border-gray-200 flex flex-col h-[600px]">
             <div id="giasu-chat" class="flex-1 overflow-y-auto p-6 space-y-4 hide-scrollbar bg-slate-50">
                 <div class="flex items-start gap-3">
@@ -104,21 +103,18 @@
             </div>
         </div>
 
-        <!-- TAB 2: KHO ĐỀ THI TỰ ĐỘNG -->
         <div id="tab-khode" class="tab-content hidden flex-1 bg-white rounded-b-xl rounded-tr-xl shadow-sm border border-gray-200 p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-heading font-bold text-gray-800">Kho Đề Thi Tham Khảo</h2>
                 <div class="text-sm text-gray-500 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-                    <i class="fas fa-[#2193B0] fa-sync-alt mr-1"></i> Đồng bộ tự động từ GitHub
+                    <i class="fas fa-check-circle text-blue-500 mr-1"></i> Tài liệu chính thức từ Admin
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="file-grid">
-                <!-- Danh sách file sẽ tự động render tại đây -->
-            </div>
+                </div>
         </div>
 
-        <!-- TAB 3: AI TẠO ĐỀ THI VÀO 10 -->
         <div id="tab-taode" class="tab-content hidden flex-1 bg-white rounded-b-xl rounded-tr-xl shadow-sm border border-gray-200 flex flex-col lg:flex-row overflow-hidden h-[600px]">
             <div class="w-full lg:w-1/3 bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-200 p-6 flex flex-col">
                 <h2 class="text-xl font-heading font-bold text-gray-800 mb-6">Tùy chỉnh Đề thi vào 10</h2>
@@ -206,6 +202,7 @@
             const userText = giasuInput.value.trim();
             if (!userText || isTutorThinking) return;
 
+            // Render User Message
             const userDiv = document.createElement('div');
             userDiv.className = 'flex items-start gap-3 flex-row-reverse';
             userDiv.innerHTML = `<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 shrink-0 shadow-sm"><i class="fas fa-user"></i></div>
@@ -214,6 +211,7 @@
             giasuInput.value = '';
             giasuChat.scrollTop = giasuChat.scrollHeight;
 
+            // Render Loading
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'flex items-start gap-3';
             loadingDiv.innerHTML = `<div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white shrink-0"><i class="fas fa-robot"></i></div>
@@ -242,6 +240,7 @@
                 if (!response.ok) throw new Error("Lỗi kết nối API");
                 const data = await response.json();
                 
+                // Nối trực tiếp câu cảnh báo vào phản hồi của AI
                 const reply = (data.reply || data.text || "Xin lỗi, thầy cô không thể phản hồi lúc này.") + aiDisclaimerText;
 
                 giasuChat.removeChild(loadingDiv);
@@ -264,92 +263,57 @@
         });
 
         // ----------------------------------------------------
-        // TÍNH NĂNG 2: KHO ĐỀ THI TỰ ĐỘNG (ĐỒNG BỘ GITHUB API)
+        // TÍNH NĂNG 2: KHO ĐỀ THI TĨNH (ĐÃ ĐỒNG BỘ GITHUB)
         // ----------------------------------------------------
-        async function loadGitHubFiles() {
+        
+        const staticFiles = [
+            { 
+                title: "Đề thi Toán vào 10", 
+                fileName: "detoan.pdf", 
+                path: "./tailieu/detoan.pdf", 
+                icon: "fa-file-pdf", 
+                color: "text-red-500", 
+                date: "Cập nhật mới nhất" 
+            },
+            { 
+                title: "Đề thi Ngữ Văn vào 10", 
+                fileName: "devan.docx", 
+                path: "./tailieu/devan.docx", 
+                icon: "fa-file-word", 
+                color: "text-blue-500", 
+                date: "Cập nhật mới nhất" 
+            },
+            { 
+                title: "Đề thi Tiếng Anh vào 10", 
+                fileName: "deanh.docx", 
+                path: "./tailieu/deanh.docx", 
+                icon: "fa-file-word", 
+                color: "text-blue-500", 
+                date: "Cập nhật mới nhất" 
+            }
+        ];
+
+        function loadStaticFiles() {
             const fileGrid = document.getElementById('file-grid');
-            fileGrid.innerHTML = `
-                <div class="col-span-full text-center py-8 text-gray-500">
-                    <i class="fas fa-spinner fa-spin text-3xl mb-2 text-primary"></i>
-                    <p>Đang tải danh sách tài liệu mới nhất...</p>
-                </div>
-            `;
-
-            const apiUrl = 'https://api.github.com/repos/duankhoahocgiaoduc-tech/duankhoahocgiaoduc/contents/tailieu';
-
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error("Không thể tải danh sách từ GitHub");
-                
-                const files = await response.json();
-                
-                // Lọc bỏ file README.md và chỉ giữ lại các file thực tế
-                const docFiles = files.filter(file => file.type === 'file' && file.name.toLowerCase() !== 'readme.md');
-
-                if (docFiles.length === 0) {
-                    fileGrid.innerHTML = `
-                        <div class="col-span-full text-center py-8 text-gray-400">
-                            <i class="fas fa-folder-open text-4xl mb-2"></i>
-                            <p>Chưa có tài liệu nào trong thư mục tailieu.</p>
+            fileGrid.innerHTML = ''; 
+            
+            staticFiles.forEach(file => {
+                fileGrid.innerHTML += `
+                    <div class="border border-gray-200 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition bg-gray-50 group">
+                        <i class="fas ${file.icon} text-4xl ${file.color}"></i>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-semibold text-gray-800 truncate" title="${file.title}">${file.title}</h4>
+                            <p class="text-xs text-gray-500 mt-1">${file.date}</p>
                         </div>
-                    `;
-                    return;
-                }
-
-                fileGrid.innerHTML = ''; // Xóa trạng thái loading
-
-                docFiles.forEach(file => {
-                    const fileName = file.name;
-                    const ext = fileName.split('.').pop().toLowerCase();
-                    
-                    // Phân loại icon và màu sắc theo đuôi file
-                    let icon = 'fa-file-alt';
-                    let color = 'text-gray-500';
-
-                    if (ext === 'pdf') {
-                        icon = 'fa-file-pdf';
-                        color = 'text-red-500';
-                    } else if (['doc', 'docx'].includes(ext)) {
-                        icon = 'fa-file-word';
-                        color = 'text-blue-500';
-                    } else if (['xls', 'xlsx'].includes(ext)) {
-                        icon = 'fa-file-excel';
-                        color = 'text-green-500';
-                    } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
-                        icon = 'fa-file-image';
-                        color = 'text-purple-500';
-                    }
-
-                    // Đường dẫn tương đối trỏ trực tiếp đến file trong thư mục tailieu
-                    const filePath = `./tailieu/${encodeURIComponent(fileName)}`;
-
-                    fileGrid.innerHTML += `
-                        <div class="border border-gray-200 rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition bg-gray-50 group">
-                            <i class="fas ${icon} text-4xl ${color}"></i>
-                            <div class="flex-1 min-w-0">
-                                <h4 class="font-semibold text-gray-800 truncate" title="${escapeHtml(fileName)}">${escapeHtml(fileName)}</h4>
-                                <p class="text-xs text-gray-500 mt-1">Định dạng ${ext.toUpperCase()}</p>
-                            </div>
-                            <a href="${filePath}" download="${escapeHtml(fileName)}" target="_blank" title="Xem / Tải xuống" class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-600 hover:text-white transition cursor-pointer shadow-sm">
-                                <i class="fas fa-download"></i>
-                            </a>
-                        </div>
-                    `;
-                });
-
-            } catch (err) {
-                console.error(err);
-                fileGrid.innerHTML = `
-                    <div class="col-span-full text-center py-8 text-red-500">
-                        <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                        <p>Không thể tải tự động danh sách tài liệu. Vui lòng kiểm tra lại đường truyền!</p>
+                        <a href="${file.path}" download="${file.fileName}" target="_blank" title="Tải xuống" class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-600 hover:text-white transition cursor-pointer shadow-sm">
+                            <i class="fas fa-download"></i>
+                        </a>
                     </div>
                 `;
-            }
+            });
         }
 
-        // Chạy hàm quét tài liệu tự động
-        loadGitHubFiles();
+        loadStaticFiles();
 
         // ----------------------------------------------------
         // TÍNH NĂNG 3: AI TẠO ĐỀ ÔN TẬP
@@ -389,6 +353,7 @@
                 if (!response.ok) throw new Error("Lỗi API sinh đề");
                 const data = await response.json();
                 
+                // Nối trực tiếp câu cảnh báo vào dữ liệu trả ra
                 const replyData = (data.reply || "Không có dữ liệu") + aiDisclaimerText;
                 
                 const cleanHTML = DOMPurify.sanitize(marked.parse(replyData));
