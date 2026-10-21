@@ -234,7 +234,8 @@
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: systemPrompt })
+                    // Thêm type: 'giasu' để định tuyến API Key
+                    body: JSON.stringify({ message: systemPrompt, type: 'giasu' })
                 });
 
                 if (!response.ok) throw new Error("Lỗi kết nối API");
@@ -347,7 +348,8 @@
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: prompt })
+                    // Thêm type: 'taode' để định tuyến API Key
+                    body: JSON.stringify({ message: prompt, type: 'taode' })
                 });
 
                 if (!response.ok) throw new Error("Lỗi API sinh đề");
