@@ -248,7 +248,8 @@
             1. Giải thích chính xác, đi thẳng vào trọng tâm, phân tích từng bước rõ ràng.
             2. Cung cấp ĐÁP ÁN CUỐI CÙNG được in đậm.
             3. Tuyệt đối không bịa đặt. Nếu đề thiếu dữ kiện hoặc không thể giải, hãy giải thích lý do rõ ràng.
-            4. Trình bày bằng ngôn ngữ thân thiện, xưng "Thầy/Cô" và gọi "em".]
+            4. Trình bày bằng ngôn ngữ thân thiện, xưng "Thầy/Cô" và gọi "em".
+            5. QUAN TRỌNG: Mọi biến số, biểu thức Toán học, Vật lí BẮT BUỘC phải đặt trong dấu $ (ví dụ: $x^2$, $F=ma$) để hiển thị chuẩn LaTeX. Công thức đứng riêng một dòng phải đặt trong dấu $$. Tuyệt đối không dùng \\( hay \\[. ]
             
             Đề bài của học sinh: ${userText}`;
 
@@ -355,7 +356,9 @@
               2. Phần ĐỀ THI: Gồm các câu hỏi trắc nghiệm và tự luận phù hợp, bám sát chương trình chuẩn.
               3. Dòng kẻ phân cách rõ ràng: "---"
               4. Phần ĐÁP ÁN & HƯỚNG DẪN GIẢI CHI TIẾT: Lời giải từng bước, có sử dụng công thức rõ ràng.
-            - Định dạng: Trình bày bằng Markdown sạch sẽ, bắt buộc sử dụng LaTeX ($ dan $$) cho mọi kí hiệu, biểu thức toán học hoặc công thức vật lý.]`;
+            - Định dạng: Trình bày bằng Markdown sạch sẽ.
+            *** YÊU CẦU BẮT BUỘC VỀ KÍ HIỆU TOÁN/LÝ ***
+            Tất cả các số liệu, biến số, phân số, phương trình... BẮT BUỘC phải dùng cú pháp LaTeX chuẩn. Đặt công thức trong cùng 1 dòng vào giữa hai dấu $ (Ví dụ: $F = m \\cdot a$). Đặt công thức đứng độc lập ở một dòng riêng vào giữa hai dấu $$ (Ví dụ: $$\\Delta = b^2 - 4ac$$). TUYỆT ĐỐI KHÔNG SỬ DỤNG cú pháp \\( ... \\) hoặc \\[ ... \\].]`;
 
             try {
                 const response = await fetch('/api/chat', {
@@ -371,7 +374,7 @@
                 
                 const cleanHTML = DOMPurify.sanitize(marked.parse(replyData));
                 genResult.innerHTML = cleanHTML;
-                renderMath(cleanHTML);
+                renderMath(genResult);
                 
             } catch (err) {
                 genResult.innerHTML = `<div class="text-red-500 font-bold p-4 bg-red-50 rounded"><i class="fas fa-exclamation-triangle"></i> Lỗi: ${err.message}</div>`;
