@@ -131,7 +131,6 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Chọn tuần ôn tập</label>
                         <select id="gen-week" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary outline-none">
-                            <!-- Danh sách từ Tuần 1 tới Tuần 35 -->
                             <script>
                                 document.write('<option value="Tuần 1">Tuần 1</option>');
                                 for(let i = 2; i <= 35; i++) {
@@ -224,7 +223,6 @@
             const userText = giasuInput.value.trim();
             if (!userText || isTutorThinking) return;
 
-            // Render User Message
             const userDiv = document.createElement('div');
             userDiv.className = 'flex items-start gap-3 flex-row-reverse';
             userDiv.innerHTML = `<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 shrink-0 shadow-sm"><i class="fas fa-user"></i></div>
@@ -233,7 +231,6 @@
             giasuInput.value = '';
             giasuChat.scrollTop = giasuChat.scrollHeight;
 
-            // Render Loading
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'flex items-start gap-3';
             loadingDiv.innerHTML = `<div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white shrink-0"><i class="fas fa-robot"></i></div>
@@ -348,8 +345,20 @@
                 </div>
             `;
 
+            // Bổ sung khung chương trình để ép AI bám sát sách mới của lớp 9
+            let extraContext = "";
+            if (subject === "Lí") {
+                extraContext = `\nĐÂY LÀ MỤC LỤC CHƯƠNG TRÌNH VẬT LÍ (KHTN) LỚP 9 MỚI ĐỂ BẠN DỰA VÀO ĐÁNH GIÁ TIẾN ĐỘ THEO TUẦN (Có 5 chương học trải dài trong 35 tuần):
+                - Chương 1: Năng lượng cơ học (Động năng, thế năng, cơ năng, công và công suất).
+                - Chương 2: Ánh sáng (Khúc xạ, phản xạ toàn phần, lăng kính, thấu kính, kính lúp).
+                - Chương 3: Điện (Điện trở, định luật Ohm, đoạn mạch nối tiếp/song song, năng lượng và công suất điện).
+                - Chương 4: Điện từ (Cảm ứng điện từ, dòng điện xoay chiều).
+                - Chương 5: Năng lượng với cuộc sống (Vòng năng lượng, năng lượng hóa thạch/tái tạo).
+                Bạn hãy ước lượng kiến thức của ${week} tương ứng với các bài học trong mục lục này để sinh đề bài. TUYỆT ĐỐI KHÔNG dùng chương trình cũ (như Quang học, Điện từ học sắp xếp lộn xộn).`;
+            }
+
             const prompt = `[YÊU CẦU NGHIÊM NGẶT: Đóng vai một Giáo viên bộ môn ${subject} THCS xuất sắc.
-            Nhiệm vụ: Hãy biên soạn 01 đề kiểm tra / ôn tập môn ${subject} LỚP 9 giới hạn kiến thức ĐÚNG TỪ ${week} TRỞ VỀ TRƯỚC CỦA CHƯƠNG TRÌNH LỚP 9 (tức là chỉ dùng nội dung từ tuần 1 đến ${week} của lớp 9, tuyệt đối KHÔNG đưa vào kiến thức của các tuần sau hoặc của các lớp khác).
+            Nhiệm vụ: Hãy biên soạn 01 đề kiểm tra / ôn tập môn ${subject} LỚP 9 giới hạn kiến thức ĐÚNG TỪ ${week} TRỞ VỀ TRƯỚC CỦA CHƯƠNG TRÌNH LỚP 9 (tức là chỉ dùng nội dung từ tuần 1 đến ${week} của lớp 9, tuyệt đối KHÔNG đưa vào kiến thức của các tuần sau hoặc của các lớp khác). ${extraContext}
             - Mức độ: ${level}.
             - Cấu trúc đề bắt buộc:
               1. Tiêu đề đề thi in đậm rõ ràng (ví dụ: ĐỀ ÔN TẬP MÔN ${subject.toUpperCase()} LỚP 9 - ${week.toUpperCase()}).
