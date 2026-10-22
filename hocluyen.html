@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     
     <script>
-        MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['[', ']']] } };
+        MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] } };
     </script>
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
@@ -344,16 +344,16 @@
             genResult.innerHTML = `
                 <div class="flex flex-col items-center justify-center h-full text-primary space-y-4">
                     <i class="fas fa-cog fa-spin text-5xl"></i>
-                    <p class="font-semibold animate-pulse">AI đang tổng hợp kiến thức môn ${subject} từ ${week} trở về trước để biên soạn đề (${level}). Vui lòng đợi...</p>
+                    <p class="font-semibold animate-pulse">AI đang tổng hợp kiến thức môn ${subject} Lớp 9 từ ${week} trở về trước để biên soạn đề (${level}). Vui lòng đợi...</p>
                 </div>
             `;
 
-            const prompt = `[YÊU CẦU NGHIÊM NGẶT: Đóng vai một Giáo viên bộ môn ${subject} xuất sắc.
-            Nhiệm vụ: Hãy biên soạn 01 đề kiểm tra / ôn tập môn ${subject} giới hạn kiến thức ĐÚNG TỪ ${week} TRỞ VỀ TRƯỚC (tức là chỉ dùng nội dung từ tuần 1 đến ${week}, tuyệt đối KHÔNG đưa vào các kiến thức của các tuần sau).
+            const prompt = `[YÊU CẦU NGHIÊM NGẶT: Đóng vai một Giáo viên bộ môn ${subject} THCS xuất sắc.
+            Nhiệm vụ: Hãy biên soạn 01 đề kiểm tra / ôn tập môn ${subject} LỚP 9 giới hạn kiến thức ĐÚNG TỪ ${week} TRỞ VỀ TRƯỚC CỦA CHƯƠNG TRÌNH LỚP 9 (tức là chỉ dùng nội dung từ tuần 1 đến ${week} của lớp 9, tuyệt đối KHÔNG đưa vào kiến thức của các tuần sau hoặc của các lớp khác).
             - Mức độ: ${level}.
             - Cấu trúc đề bắt buộc:
-              1. Tiêu đề đề thi in đậm rõ ràng (ví dụ: ĐỀ ÔN TẬP MÔN ${subject.toUpperCase()} - ${week.toUpperCase()}).
-              2. Phần ĐỀ THI: Gồm các câu hỏi trắc nghiệm và tự luận phù hợp, bám sát chương trình chuẩn.
+              1. Tiêu đề đề thi in đậm rõ ràng (ví dụ: ĐỀ ÔN TẬP MÔN ${subject.toUpperCase()} LỚP 9 - ${week.toUpperCase()}).
+              2. Phần ĐỀ THI: Gồm các câu hỏi trắc nghiệm và tự luận phù hợp, bám sát chương trình chuẩn lớp 9.
               3. Dòng kẻ phân cách rõ ràng: "---"
               4. Phần ĐÁP ÁN & HƯỚNG DẪN GIẢI CHI TIẾT: Lời giải từng bước, có sử dụng công thức rõ ràng.
             - Định dạng: Trình bày bằng Markdown sạch sẽ.
