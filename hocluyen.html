@@ -115,31 +115,53 @@
                 </div>
         </div>
 
+        <!-- TAB TẠO ĐỀ ÔN TẬP THEO TUẦN (1 ĐẾN 35) -->
         <div id="tab-taode" class="tab-content hidden flex-1 bg-white rounded-b-xl rounded-tr-xl shadow-sm border border-gray-200 flex flex-col lg:flex-row overflow-hidden h-[600px]">
             <div class="w-full lg:w-1/3 bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-200 p-6 flex flex-col">
-                <h2 class="text-xl font-heading font-bold text-gray-800 mb-6">Tùy chỉnh Đề thi</h2>
+                <h2 class="text-xl font-heading font-bold text-gray-800 mb-6">Tùy chỉnh Đề Ôn Tập Theo Tuần</h2>
                 
-                <div class="space-y-4 flex-1">
+                <div class="space-y-4 flex-1 overflow-y-auto hide-scrollbar pr-1">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Môn học</label>
                         <select id="gen-subject" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary outline-none">
                             <option value="Toán">Toán</option>
-                            <option value="Ngữ Văn">Ngữ Văn</option>
-                            <option value="Tiếng Anh">Tiếng Anh</option>
+                            <option value="Lí">Vật Lí</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Mức độ</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Chọn tuần ôn tập</label>
+                        <select id="gen-week" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary outline-none">
+                            <!-- Danh sách từ Tuần 1 tới Tuần 35 -->
+                            <script>
+                                document.write('<option value="Tuần 1">Tuần 1</option>');
+                                for(let i = 2; i <= 35; i++) {
+                                    if(i === 8) {
+                                        document.write(`<option value="Tuần ${i}">Tuần ${i} (Ôn tập giữa kì I)</option>`);
+                                    } else if(i === 18) {
+                                        document.write(`<option value="Tuần ${i}">Tuần ${i} (Ôn tập cuối kì I)</option>`);
+                                    } else if(i === 27) {
+                                        document.write(`<option value="Tuần ${i}">Tuần ${i} (Ôn tập giữa kì II)</option>`);
+                                    } else if(i === 35) {
+                                        document.write(`<option value="Tuần ${i}" selected>Tuần ${i} (Ôn tập cuối năm)</option>`);
+                                    } else {
+                                        document.write(`<option value="Tuần ${i}">Tuần ${i} (Từ T1 đến T${i})</option>`);
+                                    }
+                                }
+                            </script>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Mức độ đề</label>
                         <select id="gen-level" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary outline-none">
-                            <option value="Cơ bản">Cơ bản (7 điểm)</option>
-                            <option value="Vận dụng">Vận dụng (8-9 điểm)</option>
-                            <option value="Nâng cao">Nâng cao (10 điểm)</option>
+                            <option value="Cơ bản">Cơ bản (Bám sát SGK)</option>
+                            <option value="Vận dụng">Vận dụng (Khá)</option>
+                            <option value="Nâng cao">Nâng cao (Giỏi)</option>
                         </select>
                     </div>
                 </div>
 
                 <button id="btn-generate" class="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 rounded-lg shadow-md hover:opacity-90 transition flex items-center justify-center gap-2 mt-4">
-                    <i class="fas fa-cogs"></i> AI Bắt Đầu Tạo Đề
+                    <i class="fas fa-cogs"></i> AI Tạo Đề Ôn Tập
                 </button>
             </div>
 
@@ -147,7 +169,7 @@
                 <div id="gen-result" class="flex-1 overflow-y-auto hide-scrollbar markdown">
                     <div class="flex flex-col items-center justify-center h-full text-gray-400">
                         <i class="fas fa-file-signature text-6xl mb-4 opacity-50"></i>
-                        <p>Chọn cấu hình và bấm "Tạo Đề" để AI bắt đầu biên soạn.</p>
+                        <p>Chọn môn, chọn tuần từ 1 đến 35 và bấm "AI Tạo Đề Ôn Tập" để bắt đầu biên soạn.</p>
                     </div>
                 </div>
             </div>
@@ -234,14 +256,12 @@
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // Thêm type: 'giasu' để định tuyến API Key
                     body: JSON.stringify({ message: systemPrompt, type: 'giasu' })
                 });
 
                 if (!response.ok) throw new Error("Lỗi kết nối API");
                 const data = await response.json();
                 
-                // Nối trực tiếp câu cảnh báo vào phản hồi của AI
                 const reply = (data.reply || data.text || "Xin lỗi, thầy cô không thể phản hồi lúc này.") + aiDisclaimerText;
 
                 giasuChat.removeChild(loadingDiv);
@@ -264,12 +284,11 @@
         });
 
         // ----------------------------------------------------
-        // TÍNH NĂNG 2: KHO ĐỀ THI TĨNH (ĐÃ ĐỒNG BỘ GITHUB)
+        // TÍNH NĂNG 2: KHO ĐỀ THI TĨNH
         // ----------------------------------------------------
-        
         const staticFiles = [
             { 
-                title: "Đề thi Toán vào 10", 
+                title: "Đề thi Toán ôn tập", 
                 fileName: "detoan.pdf", 
                 path: "./tailieu/detoan.pdf", 
                 icon: "fa-file-pdf", 
@@ -277,17 +296,9 @@
                 date: "Cập nhật mới nhất" 
             },
             { 
-                title: "Đề thi Ngữ Văn vào 10", 
-                fileName: "devan.docx", 
+                title: "Đề thi Vật Lí ôn tập", 
+                fileName: "deli.docx", 
                 path: "./tailieu/devan.docx", 
-                icon: "fa-file-word", 
-                color: "text-blue-500", 
-                date: "Cập nhật mới nhất" 
-            },
-            { 
-                title: "Đề thi Tiếng Anh vào 10", 
-                fileName: "deanh.docx", 
-                path: "./tailieu/deanh.docx", 
                 icon: "fa-file-word", 
                 color: "text-blue-500", 
                 date: "Cập nhật mới nhất" 
@@ -317,13 +328,14 @@
         loadStaticFiles();
 
         // ----------------------------------------------------
-        // TÍNH NĂNG 3: AI TẠO ĐỀ ÔN TẬP
+        // TÍNH NĂNG 3: AI TẠO ĐỀ ÔN TẬP THEO TUẦN (1 - 35)
         // ----------------------------------------------------
         const btnGenerate = document.getElementById('btn-generate');
         const genResult = document.getElementById('gen-result');
 
         btnGenerate.addEventListener('click', async () => {
             const subject = document.getElementById('gen-subject').value;
+            const week = document.getElementById('gen-week').value;
             const level = document.getElementById('gen-level').value;
 
             btnGenerate.disabled = true;
@@ -331,42 +343,41 @@
             genResult.innerHTML = `
                 <div class="flex flex-col items-center justify-center h-full text-primary space-y-4">
                     <i class="fas fa-cog fa-spin text-5xl"></i>
-                    <p class="font-semibold animate-pulse">AI đang phân tích cấu trúc và sinh đề thi thử vào 10 môn ${subject} (${level}). Vui lòng đợi...</p>
+                    <p class="font-semibold animate-pulse">AI đang tổng hợp kiến thức môn ${subject} từ ${week} trở về trước để biên soạn đề (${level}). Vui lòng đợi...</p>
                 </div>
             `;
 
-            const prompt = `[YÊU CẦU NGHIÊM NGẶT: Đóng vai Hội đồng ra đề thi tuyển sinh lớp 10.
-            Nhiệm vụ: Tạo 01 đề thi thử vào lớp 10 môn ${subject}, độ khó: ${level} bám sát cấu trúc đề thi tuyển sinh hiện tại của các Sở GD&ĐT.
-            Cấu trúc bài viết bắt buộc:
-            1. Phần đầu: Tiêu đề đề thi in đậm, ghi rõ thời gian làm bài (thường 120 phút đối với Toán/Văn và 60 phút đối với Anh).
-            2. Phần ĐỀ THI: Cấu trúc phải sát với đề thi tuyển sinh vào lớp 10 thực tế (Trắc nghiệm/Tự luận tùy đặc thù môn học). Đề bài cần sáng tạo, có tính phân loại học sinh, không copy y hệt trên mạng.
-            3. Dòng kẻ phân cách: "---"
-            4. Phần ĐÁP ÁN: Lời giải chi tiết, rõ ràng, giải thích cách làm và thang điểm tham khảo.
-            Trình bày bằng Markdown sạch sẽ, sử dụng LaTeX ($ và $$) cho các công thức toán học/vật lý/hóa học.]`;
+            const prompt = `[YÊU CẦU NGHIÊM NGẶT: Đóng vai một Giáo viên bộ môn ${subject} xuất sắc.
+            Nhiệm vụ: Hãy biên soạn 01 đề kiểm tra / ôn tập môn ${subject} giới hạn kiến thức ĐÚNG TỪ ${week} TRỞ VỀ TRƯỚC (tức là chỉ dùng nội dung từ tuần 1 đến ${week}, tuyệt đối KHÔNG đưa vào các kiến thức của các tuần sau).
+            - Mức độ: ${level}.
+            - Cấu trúc đề bắt buộc:
+              1. Tiêu đề đề thi in đậm rõ ràng (ví dụ: ĐỀ ÔN TẬP MÔN ${subject.toUpperCase()} - ${week.toUpperCase()}).
+              2. Phần ĐỀ THI: Gồm các câu hỏi trắc nghiệm và tự luận phù hợp, bám sát chương trình chuẩn.
+              3. Dòng kẻ phân cách rõ ràng: "---"
+              4. Phần ĐÁP ÁN & HƯỚNG DẪN GIẢI CHI TIẾT: Lời giải từng bước, có sử dụng công thức rõ ràng.
+            - Định dạng: Trình bày bằng Markdown sạch sẽ, bắt buộc sử dụng LaTeX ($ dan $$) cho mọi kí hiệu, biểu thức toán học hoặc công thức vật lý.]`;
 
             try {
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // Thêm type: 'taode' để định tuyến API Key
                     body: JSON.stringify({ message: prompt, type: 'taode' })
                 });
 
                 if (!response.ok) throw new Error("Lỗi API sinh đề");
                 const data = await response.json();
                 
-                // Nối trực tiếp câu cảnh báo vào dữ liệu trả ra
                 const replyData = (data.reply || "Không có dữ liệu") + aiDisclaimerText;
                 
                 const cleanHTML = DOMPurify.sanitize(marked.parse(replyData));
                 genResult.innerHTML = cleanHTML;
-                renderMath(genResult);
+                renderMath(cleanHTML);
                 
             } catch (err) {
                 genResult.innerHTML = `<div class="text-red-500 font-bold p-4 bg-red-50 rounded"><i class="fas fa-exclamation-triangle"></i> Lỗi: ${err.message}</div>`;
             } finally {
                 btnGenerate.disabled = false;
-                btnGenerate.innerHTML = `<i class="fas fa-cogs"></i> AI Bắt Đầu Tạo Đề`;
+                btnGenerate.innerHTML = `<i class="fas fa-cogs"></i> AI Tạo Đề Ôn Tập`;
             }
         });
 
